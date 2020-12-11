@@ -63,7 +63,7 @@ def printMenu():
     print("Bienvenido")
     print("1- Inicializar Analizador")
     print("2- Cargar información de taxi-trips")
-    print("9- Identificacion de bicicletas para mantenimiento ")
+    print("3- Ruta corta segun horario ")
     print("0- Salir")
     print("*******************************************")
 
@@ -102,8 +102,8 @@ while True:
     elif int(inputs[0]) == 3:
         id1=(input('Ingrese el id de la primera estación: '))
         id2=(input('Ingrese el id de la segunda estación: '))
-        inicio= (input('Ingrese el limite inferior para la hora de inicio de la ruta: '))
-        final= (input('Ingrese el limite superior para la hora de inicio de la ruta: '))
+        inicio= (input('Ingrese el limite inferior para la hora de inicio de la ruta (en formato "HH/MM/SS"): '))
+        final= (input('Ingrese el limite superior para la hora de inicio de la ruta (en formato "HH/MM/SS"): '))
         executiontime = timeit.timeit(optionThree, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 

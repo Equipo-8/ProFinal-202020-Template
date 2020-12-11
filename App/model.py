@@ -27,6 +27,7 @@ import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
+from DISClib.ADT import stack as st
 from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
@@ -83,20 +84,22 @@ def newAnalyzer():
 # Funciones para agregar informacion al grafo
 def addTrip(analyzer, trip):
     try:
-        origin= trip['pickup_community_area']
-        destination= trip['dropoff_community_area']
-        weight = float(trip['trip_seconds'])
-        name= trip['trip_id']
-        start= getDateTimeTaxiTrip(trip)[1]
-        if not (origin==destination):
-            addStation(analyzer, origin)
-            addStation(analyzer, destination)
-            addConnection(analyzer, origin, destination, weight)
-            addDatesbypath(analyzer,origin,destination,weight,start,name)
+        weight = trip['trip_seconds']
+        if weight != '' :
+
+            origin= trip['pickup_community_area']
+            destination= trip['dropoff_community_area']
+            weight= float(weight)       
+            name= trip['trip_id']
+            start= getDateTimeTaxiTrip(trip)[1]
+            if not (origin==destination):
+                addStation(analyzer, origin)
+                addStation(analyzer, destination)
+                addConnection(analyzer, origin, destination, weight)
+                addDatesbypath(analyzer,origin,destination,weight,start,name)
             
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
-
 
 def addStation(analyzer, stationid):
     """
@@ -116,7 +119,7 @@ def addConnection(analyzer,origin,destination,weight):
     return analyzer
 
 def addDatesbypath(analyzer,v1,v2,weight,start,trip_id):
-    edge= [v1,v2,weight]
+    edge= {'vertexA':v1,'vertexB':v2,'weight':weight}
     value= {}
     value[trip_id]= edge
     key= start
@@ -138,9 +141,25 @@ def addDatesbypath(analyzer,v1,v2,weight,start,trip_id):
 
 
 def requerimiento_3(analyzer,com1,com2,inicio,final):
+    inicio= convert_to_datetime(inicio)
+    final= convert_to_datetime(final)
     minimumCostPaths(analyzer,com1)
     path= minimumCostPath(analyzer,com2)
-    print(path)
+    size= st.size(path)
+    for i in range(0,size):
+        arco= st.pop(path)
+        print(arco)
+        keys= m.keySet(analyzer['dates_paths'])
+        for i in range(0,lt.size(keys)):
+            date= lt.getElement(keys,i)
+            if date >= inicio and date <= final :
+                print(date)
+                arcs= m.get(analyzer['dates_paths'],date)['value']
+                for j in arcs.values():
+                    if j['vertexA']== arco['vertexA'] and j['vertexB'] == arco['vertexB']:
+                        print(j)
+                    
+                
     return 'chupelo'
 
 
@@ -243,6 +262,12 @@ def getDateTimeTaxiTrip(taxitrip):
     taxitripdatetime = datetime.strptime(tripstartdate, '%Y-%m-%dT%H:%M:%S.%f')
     return taxitripdatetime.date(), taxitripdatetime.time()
 
+def convert_to_datetime(date):
+    comp= '09/19/18 '
+    fecha= comp + date
+    fecha= datetime.strptime(fecha,'%m/%d/%y %H:%M:%S')
+    time= fecha.time()
+    return time
 # ==============================
 # Funciones de Comparacion
 # ==============================
