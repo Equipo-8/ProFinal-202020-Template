@@ -39,13 +39,78 @@ recae sobre el controlador.
 # ___________________________________________________
 #  Inicializacion del catalogo
 # ___________________________________________________
-
+def init():
+    analyzer = model.newAnalyzer()
+    return analyzer
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
 # ___________________________________________________
 
+def loadTrips(analyzer):
+    for filename in cf.os.listdir(cf.data_dir):
+        if filename.endswith('.csv'):
+            print('Cargando archivo: ' + filename)
+            loadFile(analyzer, filename)
+    return analyzer
+
+def loadFile(analyzer, tripfile):
+    """
+    """
+    tripfile = cf.data_dir + tripfile
+    input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
+                                delimiter=",")
+    for trip in input_file:
+        model.addTrip(analyzer, trip)
+    return analyzer
+
+
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
+def totalStops(analyzer):
+    """
+    Total de paradas de autobus
+    """
+    return model.totalStops(analyzer)
+
+
+def totalConnections(analyzer):
+    """
+    Total de enlaces entre las paradas
+    """
+    return model.totalConnections(analyzer)
+
+
+def connectedComponents(analyzer):
+    """
+    Numero de componentes fuertemente conectados
+    """
+    return model.connectedComponents(analyzer)
+
+
+def minimumCostPaths(analyzer, initialStation):
+    """
+    Calcula todos los caminos de costo minimo de initialStation a todas
+    las otras estaciones del sistema
+    """
+    return model.minimumCostPaths(analyzer, initialStation)
+
+
+def hasPath(analyzer, destStation):
+    """
+    Informa si existe un camino entre initialStation y destStation
+    """
+    return model.hasPath(analyzer, destStation)
+
+
+def minimumCostPath(analyzer, destStation):
+    """
+    Retorna el camino de costo minimo desde initialStation a destStation
+    """
+    return model.minimumCostPath(analyzer, destStation)
+
+
+def requerimiento_3(analyzer,com1,com2,inicio,final):
+    return model.requerimiento_3(analyzer,com1,com2,inicio,final)

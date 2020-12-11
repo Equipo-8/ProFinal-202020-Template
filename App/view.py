@@ -43,6 +43,10 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
+taxi_file = 'taxi-trips-wrvz-psew-subset-medium.csv'
+initialStation = 0
+
+recursionLimit = 20000
 
 # ___________________________________________________
 #  Menu principal
@@ -51,3 +55,58 @@ operación seleccionada.
 """
 Menu principal
 """
+
+
+def printMenu():
+    print("\n")
+    print("*******************************************")
+    print("Bienvenido")
+    print("1- Inicializar Analizador")
+    print("2- Cargar información de taxi-trips")
+    print("9- Identificacion de bicicletas para mantenimiento ")
+    print("0- Salir")
+    print("*******************************************")
+
+
+def optionTwo():
+    print("\nCargando información de rutas de taxi en CHICAGO ....")
+    controller.loadTrips(cont)
+    numedges = controller.totalConnections(cont)
+    numvertex = controller.totalStops(cont)
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+    print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
+    sys.setrecursionlimit(recursionLimit)
+    print('El limite de recursion se ajusta a: ' + str(recursionLimit))
+
+def optionThree():
+    print(controller.requerimiento_3(cont,id1,id2,inicio,final))
+
+
+"""
+Menu principal
+"""
+while True:
+    printMenu()
+    inputs = input('Seleccione una opción para continuar\n>')
+
+    if int(inputs[0]) == 1:
+        print("\nInicializando....")
+        # cont es el controlador que se usará de acá en adelante
+        cont = controller.init()
+
+    elif int(inputs[0]) == 2:
+        executiontime = timeit.timeit(optionTwo, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    elif int(inputs[0]) == 3:
+        id1=(input('Ingrese el id de la primera estación: '))
+        id2=(input('Ingrese el id de la segunda estación: '))
+        inicio= (input('Ingrese el limite inferior para la hora de inicio de la ruta: '))
+        final= (input('Ingrese el limite superior para la hora de inicio de la ruta: '))
+        executiontime = timeit.timeit(optionThree, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+
+    else:
+        sys.exit(0)
+sys.exit(0)
