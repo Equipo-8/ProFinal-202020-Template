@@ -198,7 +198,7 @@ def taxis(analyzer):
     iterator=it.newIterator(lsttaxis)
     while (it.hasNext(iterator)):
         nextvalue= it.next(iterator)
-        size= lt.size(nextvalue)
+        size= len(nextvalue)
 
 
 
