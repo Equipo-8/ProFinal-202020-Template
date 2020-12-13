@@ -114,3 +114,9 @@ def minimumCostPath(analyzer, destStation):
 
 def requerimiento_3(analyzer,com1,com2,inicio,final):
     return model.requerimiento_3(analyzer,com1,com2,inicio,final)
+
+def numtaxis(analyzer):
+    return model.taxis(analyzer)
+
+def companys(analyzer):
+    return model.companys(analyzer)

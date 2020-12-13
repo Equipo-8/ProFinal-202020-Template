@@ -64,6 +64,8 @@ def printMenu():
     print("1- Inicializar Analizador")
     print("2- Cargar información de taxi-trips")
     print("3- Ruta corta segun horario ")
+    print("4- Número de taxis")
+    print("5- Número de compañias que al menos tienen un taxi inscrito")
     print("0- Salir")
     print("*******************************************")
 
@@ -106,6 +108,17 @@ while True:
         final= (input('Ingrese el limite superior para la hora de inicio de la ruta (en formato "HH/MM/SS"): '))
         executiontime = timeit.timeit(optionThree, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
+    elif int(inputs[0]) == 4:
+        a= controller.numtaxis(cont)
+        print(a)
+    elif int(inputs[0]) == 5:
+        e=controller.companys(cont)
+        print(e)
+
+
+        
+        
+
 
     else:
         sys.exit(0)

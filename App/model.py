@@ -104,6 +104,7 @@ def addTrip(analyzer, trip):
                 addStation(analyzer, destination)
                 addConnection(analyzer, origin, destination, weight)
                 addDatesbypath(analyzer,origin,destination,weight,start,end,name)
+                addCompany(analyzer,trip)
             
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
@@ -142,12 +143,13 @@ def addCompany(analyzer,trip):
     taxi= trip["taxi_id"]
     existcompany= m.contains(analyzer["company"], company)
     if existcompany:
-        entry= m.get(analyzer["company"], company)
+        entry= m.get(analyzer["company"], company)["value"]
         if  not taxi in entry:
-            entry = entry.append(taxi)    
+            entry.append(taxi)    
             m.put(analyzer["company"],company, entry)
     else:
         m.put(analyzer["company"],company,[taxi])
+
 
 
 
@@ -233,16 +235,21 @@ def get_dates_ragnge2(analyzer,arco,possible_routes):
 
 def companys(analyzer):
     cantcompanies = m.keySet(analyzer["company"])
-    lt.size(cantcompanies)
+    newiterator= it.newIterator(cantcompanies)
+    while (it.hasNext(newiterator)):
+        print(it.next(newiterator))
+    return lt.size(cantcompanies)
+
 
 def taxis(analyzer):
     lsttaxis= m.valueSet(analyzer["company"])
     iterator=it.newIterator(lsttaxis)
+    canttaxis= 0
     while (it.hasNext(iterator)):
         nextvalue= it.next(iterator)
         size= len(nextvalue)
-
-
+        canttaxis += size
+    return canttaxis
 
 
 
