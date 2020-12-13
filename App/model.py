@@ -34,7 +34,7 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 from datetime import datetime
 assert config
-
+from DISClib.DataStructures import mapentry as me 
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -59,6 +59,7 @@ def newAnalyzer():
                     'nameverteces': None,
                     'dates_paths':None,
                     'paths': None,
+                    'company':None
                     }
 
         analyzer['stops'] = m.newMap(numelements=14000,
@@ -73,7 +74,13 @@ def newAnalyzer():
                                      comparefunction=compareStopIds) 
         analyzer['dates_paths'] = m.newMap(numelements=1000,
                                      maptype='PROBING',
-                                     comparefunction=compareStopIds) 
+                                     comparefunction=compareStopIds)
+        analyzer['dates_paths'] = m.newMap(numelements=1000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+        analyzer['company'] = m.newMap(numelements=1000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)                             
                                                      
         return analyzer
     except Exception as exp:
@@ -86,7 +93,6 @@ def addTrip(analyzer, trip):
     try:
         weight = trip['trip_seconds']
         if weight != '' and weight != '0.0':
-
             origin= trip['pickup_community_area']
             destination= trip['dropoff_community_area']
             weight= float(weight)       
@@ -130,6 +136,23 @@ def addDatesbypath(analyzer,v1,v2,weight,start,end,trip_id):
         x = m.get(analyzer['dates_paths'],key)
         x['value'][trip_id]= edge
     return analyzer
+
+def addCompany(analyzer,trip):
+    company= trip["company"]
+    taxi= trip["taxi_id"]
+    existcompany= m.contains(analyzer["company"], company)
+    if existcompany:
+        entry= m.get(analyzer["company"], company)
+        if  not taxi in entry:
+            entry = entry.append(taxi)    
+            m.put(analyzer["company"],company, entry)
+    else:
+        m.put(analyzer["company"],company,[taxi])
+
+
+
+
+
 
 
 
@@ -207,6 +230,23 @@ def get_dates_ragnge2(analyzer,arco,possible_routes):
 
 
         
+
+def companys(analyzer):
+    cantcompanies = m.keySet(analyzer["company"])
+    lt.size(cantcompanies)
+
+def taxis(analyzer):
+    lsttaxis= m.valueSet(analyzer["company"])
+    iterator=it.newIterator(lsttaxis)
+    while (it.hasNext(iterator)):
+        nextvalue= it.next(iterator)
+        size= lt.size(nextvalue)
+
+
+
+
+
+
 
 
 
