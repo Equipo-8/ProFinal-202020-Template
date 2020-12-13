@@ -25,7 +25,7 @@
  """
 import config
 from DISClib.ADT.graph import gr
-from DISClib.ADT import map as m
+from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 from DISClib.ADT import stack as st
 from DISClib.DataStructures import listiterator as it
@@ -34,7 +34,7 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 from datetime import datetime
 assert config
-
+from DISClib.DataStructures import mapentry as me 
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -59,6 +59,7 @@ def newAnalyzer():
                     'nameverteces': None,
                     'dates_paths':None,
                     'paths': None,
+                    'company':None
                     }
 
         analyzer['stops'] = m.newMap(numelements=14000,
@@ -73,7 +74,13 @@ def newAnalyzer():
                                      comparefunction=compareStopIds) 
         analyzer['dates_paths'] = m.newMap(numelements=1000,
                                      maptype='PROBING',
-                                     comparefunction=compareStopIds) 
+                                     comparefunction=compareStopIds)
+        analyzer['dates_paths'] = m.newMap(numelements=1000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)
+        analyzer['company'] = m.newMap(numelements=1000,
+                                     maptype='PROBING',
+                                     comparefunction=compareStopIds)                             
                                                      
         return analyzer
     except Exception as exp:
@@ -85,18 +92,19 @@ def newAnalyzer():
 def addTrip(analyzer, trip):
     try:
         weight = trip['trip_seconds']
-        if weight != '' :
-
-            origin= trip['pickup_community_area']
-            destination= trip['dropoff_community_area']
-            weight= float(weight)       
-            name= trip['trip_id']
-            start= getDateTimeTaxiTrip(trip)[1]
-            if not (origin==destination):
-                addStation(analyzer, origin)
-                addStation(analyzer, destination)
-                addConnection(analyzer, origin, destination, weight)
-                addDatesbypath(analyzer,origin,destination,weight,start,name)
+        if weight == '' :
+            weight = 0
+        origin= trip['pickup_community_area']
+        destination= trip['dropoff_community_area']
+        weight= float(weight)       
+        name= trip['trip_id']
+        start= getDateTimeTaxiTrip(trip)[1]
+        if not (origin==destination):
+            addStation(analyzer, origin)
+            addStation(analyzer, destination)
+            addConnection(analyzer, origin, destination, weight)
+            addDatesbypath(analyzer,origin,destination,weight,start,name)
+            addCompany(analyzer,trip)
             
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
@@ -130,6 +138,23 @@ def addDatesbypath(analyzer,v1,v2,weight,start,trip_id):
         x['value'][trip_id]= edge
     return analyzer
 
+def addCompany(analyzer,trip):
+    company= trip["company"]
+    taxi= trip["taxi_id"]
+    existcomapany= mp.contains(analyzer["company"], company)
+    if existcompany:
+        entry= mp.get(analyzer["company"], company)
+        if  not taxi in entry:
+            entry = entry.append(taxi)    
+            mp.put(analyzer["company"],company, entry)
+    else:
+        m.put(analyzer["company"],company,[taxi])
+
+
+
+
+
+
 
 
 
@@ -149,18 +174,35 @@ def requerimiento_3(analyzer,com1,com2,inicio,final):
     for i in range(0,size):
         arco= st.pop(path)
         print(arco)
-        keys= m.keySet(analyzer['dates_paths'])
+        keys= mp.keySet(analyzer['dates_paths'])
         for i in range(0,lt.size(keys)):
             date= lt.getElement(keys,i)
             if date >= inicio and date <= final :
                 print(date)
-                arcs= m.get(analyzer['dates_paths'],date)['value']
+                arcs= mp.get(analyzer['dates_paths'],date)['value']
                 for j in arcs.values():
                     if j['vertexA']== arco['vertexA'] and j['vertexB'] == arco['vertexB']:
                         print(j)
                     
                 
     return 'chupelo'
+
+
+
+def companys(analyzer):
+    cantcompanies = mp.keySet(analyzer["company"])
+    lt.size(cantcompanies)
+
+def taxis(analyzer):
+    lsttaxis= mp.valueSet(analyzer["company"])
+    iterator=it.newIterator(lsttaxis)
+    while (it.hasNext(iterator)):
+        nextvalue= it.next(iterator)
+        size= lt.size(nextvalue)
+
+
+
+
 
 
 
