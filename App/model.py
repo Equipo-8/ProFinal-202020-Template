@@ -85,18 +85,19 @@ def newAnalyzer():
 def addTrip(analyzer, trip):
     try:
         weight = trip['trip_seconds']
-        if weight != '' :
+        if weight != '' and weight != '0.0':
 
             origin= trip['pickup_community_area']
             destination= trip['dropoff_community_area']
             weight= float(weight)       
             name= trip['trip_id']
-            start= getDateTimeTaxiTrip(trip)[1]
-            if not (origin==destination):
+            start= getDateTimeTaxiTrip(trip['trip_start_timestamp'])[1]
+            end= getDateTimeTaxiTrip(trip['trip_end_timestamp'])[1]
+            if not (origin==destination) and not(origin=='' or destination==''):
                 addStation(analyzer, origin)
                 addStation(analyzer, destination)
                 addConnection(analyzer, origin, destination, weight)
-                addDatesbypath(analyzer,origin,destination,weight,start,name)
+                addDatesbypath(analyzer,origin,destination,weight,start,end,name)
             
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
@@ -118,8 +119,8 @@ def addConnection(analyzer,origin,destination,weight):
         gr.addEdge(analyzer['connections'], origin, destination, weight)
     return analyzer
 
-def addDatesbypath(analyzer,v1,v2,weight,start,trip_id):
-    edge= {'vertexA':v1,'vertexB':v2,'weight':weight}
+def addDatesbypath(analyzer,v1,v2,weight,start,end,trip_id):
+    edge= {'vertexA':v1,'vertexB':v2,'weight':weight,'end':end}
     value= {}
     value[trip_id]= edge
     key= start
@@ -146,23 +147,66 @@ def requerimiento_3(analyzer,com1,com2,inicio,final):
     minimumCostPaths(analyzer,com1)
     path= minimumCostPath(analyzer,com2)
     size= st.size(path)
+    print(path)
+    add= {}
     for i in range(0,size):
         arco= st.pop(path)
-        print(arco)
-        keys= m.keySet(analyzer['dates_paths'])
-        for i in range(0,lt.size(keys)):
-            date= lt.getElement(keys,i)
-            if date >= inicio and date <= final :
-                print(date)
-                arcs= m.get(analyzer['dates_paths'],date)['value']
-                for j in arcs.values():
-                    if j['vertexA']== arco['vertexA'] and j['vertexB'] == arco['vertexB']:
-                        print(j)
+        possible_routes= get_dates_range(analyzer,inicio,final,arco)
+        add[i]= possible_routes
+    print(add)
+            
+
+
+
+
+
                     
                 
     return 'chupelo'
 
 
+def get_dates_range(analyzer,inf,sup,arco):
+    mape= analyzer['dates_paths']
+    keys= m.keySet(mape)
+    results= {}
+    for i in range(0,lt.size(keys)):
+        date= lt.getElement(keys,i)
+        if date >= inf and date <= sup :
+            arcos= m.get(mape,date)['value']
+            for j in arcos.values():
+                if j['vertexA']== arco['vertexA'] and j['vertexB'] == arco['vertexB']:
+                    results[date]= j['weight']
+    return results
+
+def get_best_route(routes):
+
+    for i in routes.keys():
+        if i== 0:
+            step= routes[i]
+            for date in step.keys():
+                weight= step[j]
+                
+
+
+
+
+"""
+def get_dates_ragnge2(analyzer,arco,possible_routes):
+    mape= analyzer['dates_paths']
+    keys= m.keySet(mape)
+    organized_routes= {}
+    for i in range(0,lt.size(keys)):
+        date= lt.getElement(keys,i)
+        for j in possible_routes.keys():
+            if date == possible_routes[j]['end']:
+                arcos= m.get(mape,date)['value']
+                for k in arcos.values():
+                    if k['vertexA']== arco['vertexA'] and k['vertexB'] == arco['vertexB']:
+                        organized_routes= [{j:possible_routes[j]},date:k]
+"""
+
+
+        
 
 
 
@@ -258,8 +302,7 @@ def getDateTimeTaxiTrip(taxitrip):
 
     """
 
-    tripstartdate = taxitrip['trip_start_timestamp']
-    taxitripdatetime = datetime.strptime(tripstartdate, '%Y-%m-%dT%H:%M:%S.%f')
+    taxitripdatetime = datetime.strptime(taxitrip, '%Y-%m-%dT%H:%M:%S.%f')
     return taxitripdatetime.date(), taxitripdatetime.time()
 
 def convert_to_datetime(date):
