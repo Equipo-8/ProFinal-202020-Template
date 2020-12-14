@@ -104,6 +104,7 @@ def addTrip(analyzer, trip):
                 addStation(analyzer, destination)
                 addConnection(analyzer, origin, destination, weight)
                 addDatesbypath(analyzer,origin,destination,weight,start,end,name)
+                addCompany(analyzer,trip)
             
     except Exception as exp:
         error.reraise(exp, 'model:addTrip')
@@ -140,14 +141,16 @@ def addDatesbypath(analyzer,v1,v2,weight,start,end,trip_id):
 def addCompany(analyzer,trip):
     company= trip["company"]
     taxi= trip["taxi_id"]
+    print(company)
     existcompany= m.contains(analyzer["company"], company)
     if existcompany:
-        entry= m.get(analyzer["company"], company)
+        entry= m.get(analyzer["company"], company)["value"]
         if  not taxi in entry:
-            entry = entry.append(taxi)    
+            entry.append(taxi)    
             m.put(analyzer["company"],company, entry)
     else:
         m.put(analyzer["company"],company,[taxi])
+
 
 
 
@@ -261,14 +264,23 @@ def poner_bonita_la_ruta(arco):
 
 def companys(analyzer):
     cantcompanies = m.keySet(analyzer["company"])
-    lt.size(cantcompanies)
+    newiterator= it.newIterator(cantcompanies)
+    print("Las compañias que tienen al menos un taxi inscrito son: ")
+    while (it.hasNext(newiterator)):
+        print(it.next(newiterator))
+    return lt.size(cantcompanies)
+
 
 def taxis(analyzer):
     lsttaxis= m.valueSet(analyzer["company"])
     iterator=it.newIterator(lsttaxis)
+    canttaxis= 0
     while (it.hasNext(iterator)):
         nextvalue= it.next(iterator)
-        size= lt.size(nextvalue)
+        size= len(nextvalue)
+        canttaxis += size
+    return canttaxis
+
 
 
 
