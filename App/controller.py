@@ -120,3 +120,10 @@ def numtaxis(analyzer):
 
 def companys(analyzer):
     return model.companys(analyzer)
+
+
+def topCompanies(analyzer,quantity):
+    return model.topCompanies(analyzer,quantity)
+
+def topCompaniesbyTaxis(analyzer,quantity):
+    return model.topCompaniesbyTaxi(analyzer,quantity)

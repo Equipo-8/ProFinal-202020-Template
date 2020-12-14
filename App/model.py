@@ -32,6 +32,7 @@ from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+from DISClib.ADT import orderedmap as om
 from datetime import datetime
 assert config
 from DISClib.DataStructures import mapentry as me 
@@ -141,21 +142,67 @@ def addDatesbypath(analyzer,v1,v2,weight,start,end,trip_id):
 def addCompany(analyzer,trip):
     company= trip["company"]
     taxi= trip["taxi_id"]
-    print(company)
+    if company=="":
+        company="Independent Owner"
     existcompany= m.contains(analyzer["company"], company)
     if existcompany:
         entry= m.get(analyzer["company"], company)["value"]
         if  not taxi in entry:
-            entry.append(taxi)    
+            entry[1].append(taxi)    
+            entry[0]+=1
             m.put(analyzer["company"],company, entry)
     else:
-        m.put(analyzer["company"],company,[taxi])
+        m.put(analyzer["company"],company,[1,[taxi]])
+    
+def topCompanies(analyzer,quantity):
+    llaves=m.keySet(analyzer["company"])
+    iterador=it.newIterator(llaves)
+    orderedmap=om.newMap(omaptype="RBT",comparefunction=CompaniesComparer)
+    while it.hasNext(iterador):
+        llave=it.next(iterador)
+        clave=m.get(analyzer['company'],llave)['value'][0]
+        compañia={'quantity':clave,'company':llave}
+        om.put(orderedmap,clave,llave)
+    llaves=om.keySet(orderedmap)
+    iterador=it.newIterator(llaves)
+    retorno=[]
+    for x in range(lt.size(llaves)-quantity,lt.size(llaves)):
+        llave=lt.getElement(llaves,x)
+        retorno.append([om.get(orderedmap,llave)['value'],om.get(orderedmap,llave)['key']])
+    return retorno
+
+def topCompaniesbyTaxi(analyzer,quantity):
+    llaves=m.keySet(analyzer["company"])
+    iterador=it.newIterator(llaves)
+    orderedmap=om.newMap(omaptype="RBT",comparefunction=CompaniesComparer)
+    while it.hasNext(iterador):
+        llave=it.next(iterador)
+        clave=m.get(analyzer['company'],llave)['value']
+        clave=len(clave[1])
+        print(clave)
+        compañia={'quantity':clave,'company':llave}
+        om.put(orderedmap,clave,llave)
+    llaves=om.keySet(orderedmap)
+    iterador=it.newIterator(llaves)
+    retorno=[]
+    for x in range(lt.size(llaves)-quantity,lt.size(llaves)):
+        llave=lt.getElement(llaves,x)
+        retorno.append([om.get(orderedmap,llave)['value'],om.get(orderedmap,llave)['key']])
+    return retorno
 
 
-
-
-
-
+def CompaniesComparer(company1,company2):
+    if isinstance(company1, dict):
+        company1=company1['quantity']
+    if isinstance(company2, dict):
+        company2=company2['quantity']
+    
+    if company1==company2:
+        return 0
+    elif company1>company2:
+        return 1
+    else:
+        return -1
 
 
 
@@ -264,10 +311,6 @@ def poner_bonita_la_ruta(arco):
 
 def companys(analyzer):
     cantcompanies = m.keySet(analyzer["company"])
-    newiterator= it.newIterator(cantcompanies)
-    print("Las compañias que tienen al menos un taxi inscrito son: ")
-    while (it.hasNext(newiterator)):
-        print(it.next(newiterator))
     return lt.size(cantcompanies)
 
 
@@ -280,11 +323,6 @@ def taxis(analyzer):
         size= len(nextvalue)
         canttaxis += size
     return canttaxis
-
-
-
-
-
 
 
 

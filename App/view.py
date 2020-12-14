@@ -43,7 +43,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-taxi_file = 'taxi-trips-wrvz-psew-subset-medium.csv'
+taxi_file = 'taxi-trips-wrvz-psew-subset-small.csv'
 initialStation = 0
 
 recursionLimit = 20000
@@ -66,6 +66,8 @@ def printMenu():
     print("3- Ruta corta segun horario ")
     print("4- Número de taxis")
     print("5- Número de compañias que al menos tienen un taxi inscrito")
+    print("6- Top compañías")
+    print("7- Top compañías (taxis)")
     print("0- Salir")
     print("*******************************************")
 
@@ -89,7 +91,18 @@ def optionThree():
             print('Desde la community area numero ' + str(rta[0][i]['vertexA']) + ' Hasta la community area numero ' + str(rta[0][i]['vertexB']))
         print('La hora recomendada para realizar este camino es : ' + str(rta[1]))
         print('El tiempo estimado para recorrer este camino en segundos es : ' + str(rta[2]))
-        
+def optionFour():
+        a= controller.numtaxis(cont)
+        print("El número total de taxis es de: ", a)
+def optionFive():
+        e=controller.companys(cont)
+        print("El numero de compañías con un taxi inscrito es: "+str(e))
+def optionSix():
+        e=controller.topCompanies(cont,cantidad)
+        print(e)
+def optionSeven():
+        e=controller.topCompaniesbyTaxis(cont,cantidad2)
+        print(e)
 
 
 """
@@ -116,11 +129,19 @@ while True:
         executiontime = timeit.timeit(optionThree, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
     elif int(inputs[0]) == 4:
-        a= controller.numtaxis(cont)
-        print("El número total de taxis es de: ", a)
+        executiontime = timeit.timeit(optionFour, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
     elif int(inputs[0]) == 5:
-        e=controller.companys(cont)
-        print(e)
+        executiontime = timeit.timeit(optionFive, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+    elif int(inputs[0]) == 6:
+        cantidad=int(input('Ingresa la cantidad de compañías que quieres ver en el top: '))
+        executiontime = timeit.timeit(optionSix, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
+    elif int(inputs[0]) == 7:
+        cantidad2=int(input("Ingresa la cantidad de compañías que quieres ver en el top: "))
+        executiontime = timeit.timeit(optionSeven, number=1)
+        print("Tiempo de ejecución: " + str(executiontime))
 
 
         
