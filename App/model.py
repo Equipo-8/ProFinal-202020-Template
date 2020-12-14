@@ -141,6 +141,7 @@ def addDatesbypath(analyzer,v1,v2,weight,start,end,trip_id):
 def addCompany(analyzer,trip):
     company= trip["company"]
     taxi= trip["taxi_id"]
+    print(company)
     existcompany= m.contains(analyzer["company"], company)
     if existcompany:
         entry= m.get(analyzer["company"], company)["value"]
@@ -251,6 +252,9 @@ def taxis(analyzer):
         size= len(nextvalue)
         canttaxis += size
     return canttaxis
+
+
+
 
 
 
