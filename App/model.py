@@ -147,10 +147,10 @@ def addCompany(analyzer,trip):
     existcompany= m.contains(analyzer["company"], company)
     if existcompany:
         entry= m.get(analyzer["company"], company)["value"]
+        entry[0]+=1
         if  not taxi in entry:
             entry[1].append(taxi)    
-            entry[0]+=1
-            m.put(analyzer["company"],company, entry)
+        m.put(analyzer["company"],company, entry)
     else:
         m.put(analyzer["company"],company,[1,[taxi]])
     
