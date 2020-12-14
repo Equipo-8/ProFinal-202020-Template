@@ -165,28 +165,42 @@ def addCompany(analyzer,trip):
 
 
 def requerimiento_3(analyzer,com1,com2,inicio,final):
-    inicio= convert_to_datetime(inicio)
-    final= convert_to_datetime(final)
-    minimumCostPaths(analyzer,com1)
-    path= minimumCostPath(analyzer,com2)
-    size= st.size(path)
-    print(path)
-    add= {}
-    for i in range(0,size):
-        arco= st.pop(path)
-        possible_routes= get_dates_range(analyzer,inicio,final,arco)
-        add[i]= possible_routes
-    print(add)
+    try:
+        inicio= convert_to_datetime(inicio)
+        final= convert_to_datetime(final)
+        if final >= inicio :
             
-
-
-
-
-
-                    
-                
-    return 'chupelo'
-
+            minimumCostPaths(analyzer,com1)
+            path= minimumCostPath(analyzer,com2)
+            if path is not None :
+                print('HAY CAMINO MI HERMANO')
+                organized_path= []
+                size= st.size(path)
+                add= {}
+                for i in range(0,size):
+                    arco= st.pop(path)
+                    organized_path.append(poner_bonita_la_ruta(arco))
+                    possible_routes= get_dates_range(analyzer,inicio,final,arco)
+                    add[i]= possible_routes
+                first= add[0]
+                minor= 0
+                date= None
+                for i in first.keys():
+                    x= get_logical_route(add,i,final,first[i],size)
+                    wei= get_time_route(x,i)
+                    if minor== 0:
+                        minor= wei[0]
+                        date= wei[1]
+                    elif minor > wei[0]:
+                        minor= wei[0]
+                        date= wei[1]
+                return (organized_path,date,minor)
+            else:
+                print('NO HAY CAMINO MI HERMANO')
+        else:
+            print('COMO RAYOS ES MENOR EL LIMITE SUPERIOR CRACKKK')
+    except Exception as exp:
+        error.reraise(exp, 'model;Fallo en requerimiento 3')
 
 def get_dates_range(analyzer,inf,sup,arco):
     mape= analyzer['dates_paths']
@@ -201,35 +215,49 @@ def get_dates_range(analyzer,inf,sup,arco):
                     results[date]= j['weight']
     return results
 
-def get_best_route(routes):
-
+def get_logical_route(routes,start,end,weight,size):
+    temp= start
+    lt= []
+    lt.append({start:weight})
     for i in routes.keys():
-        if i== 0:
+        if i != 0:
             step= routes[i]
+            k= 0
             for date in step.keys():
-                weight= step[j]
+                wei= step[date]
+                if date >= temp and k== 0:
+                    lt.append({date:wei})
+                    temp= date
+                elif date >= temp and i < (size-1) and date < end:
+                    temp= date
+                    lt[i][date]=wei
+                elif date >= temp and i == size :
+                    temp= date
+                    lt[i][date]= wei
+
+    return lt
                 
+def get_time_route(routes,start):
+    weight= routes[0][start]
+    for i in range(1,len(routes)):
+        step= routes[i]
+        minor= 0
+        for date in step.keys():
+            wei= step[date]
+            if minor== 0:
+                minor= wei
+            elif wei < minor:
+                minor= wei
+        weight+= minor               
+    return (weight,start)
+
+def poner_bonita_la_ruta(arco):
+    vertexA= arco['vertexA']
+    vertexB= arco['vertexB']
+    hola= {'vertexA':vertexA,'vertexB':vertexB}
+    return hola
 
 
-
-
-"""
-def get_dates_ragnge2(analyzer,arco,possible_routes):
-    mape= analyzer['dates_paths']
-    keys= m.keySet(mape)
-    organized_routes= {}
-    for i in range(0,lt.size(keys)):
-        date= lt.getElement(keys,i)
-        for j in possible_routes.keys():
-            if date == possible_routes[j]['end']:
-                arcos= m.get(mape,date)['value']
-                for k in arcos.values():
-                    if k['vertexA']== arco['vertexA'] and k['vertexB'] == arco['vertexB']:
-                        organized_routes= [{j:possible_routes[j]},date:k]
-"""
-
-
-        
 
 def companys(analyzer):
     cantcompanies = m.keySet(analyzer["company"])

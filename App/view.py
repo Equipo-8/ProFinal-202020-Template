@@ -80,7 +80,14 @@ def optionTwo():
     print('El limite de recursion se ajusta a: ' + str(recursionLimit))
 
 def optionThree():
-    print(controller.requerimiento_3(cont,id1,id2,inicio,final))
+    rta=controller.requerimiento_3(cont,id1,id2,inicio,final)
+    if rta is not None:
+        print('El camino mas corto entre estas dos community areas esta compuesto de ' + str(len(rta[0])) + ' trayectos :')
+        for i in range(0,len(rta[0])):
+            print('Desde la community area numero ' + str(rta[0][i]['vertexA']) + ' Hasta la community area numero ' + str(rta[0][i]['vertexB']))
+        print('La hora recomendada para realizar este camino es : ' + str(rta[1]))
+        print('El tiempo estimado para recorrer este camino en segundos es : ' + str(rta[2]))
+        
 
 
 """
@@ -102,8 +109,8 @@ while True:
     elif int(inputs[0]) == 3:
         id1=(input('Ingrese el id de la primera estación: '))
         id2=(input('Ingrese el id de la segunda estación: '))
-        inicio= (input('Ingrese el limite inferior para la hora de inicio de la ruta (en formato "HH/MM/SS"): '))
-        final= (input('Ingrese el limite superior para la hora de inicio de la ruta (en formato "HH/MM/SS"): '))
+        inicio= (input('Ingrese el limite inferior para la hora de la ruta (en formato "HH/MM/SS"): '))
+        final= (input('Ingrese el limite superior para la hora de la ruta (en formato "HH/MM/SS"): '))
         executiontime = timeit.timeit(optionThree, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
