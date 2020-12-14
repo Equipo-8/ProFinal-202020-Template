@@ -110,7 +110,7 @@ while True:
         print("Tiempo de ejecución: " + str(executiontime))
     elif int(inputs[0]) == 4:
         a= controller.numtaxis(cont)
-        print(a)
+        print("El número total de taxis es de: ", a)
     elif int(inputs[0]) == 5:
         e=controller.companys(cont)
         print(e)

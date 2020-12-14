@@ -236,6 +236,7 @@ def get_dates_ragnge2(analyzer,arco,possible_routes):
 def companys(analyzer):
     cantcompanies = m.keySet(analyzer["company"])
     newiterator= it.newIterator(cantcompanies)
+    print("Las compañias que tienen al menos un taxi inscrito son: ")
     while (it.hasNext(newiterator)):
         print(it.next(newiterator))
     return lt.size(cantcompanies)
